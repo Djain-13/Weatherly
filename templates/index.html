@@ -38,7 +38,7 @@
         </form>
 
         {% if data %}
-        Description: {{data.main}}
+        Clouds: {{data.main}}
         <br>
         <img src="https://openweathermap.org/img/wn/{{data.icon}}@2x.png" alt="Icon">
         <p style="font-size: 1.2em;">Temperature: {{data.temperature}} °C</p>
@@ -61,8 +61,13 @@
             {% endfor %}
         </div>
 
+        {% if graph_url %}
+        <h3>Forecast Graph</h3>
+        <img src="{{ graph_url }}" alt="Forecast Graph" style="width: 80%; margin-top: 20px; border-radius: 10px;">
+        {% endif %}
         {% endif %}
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

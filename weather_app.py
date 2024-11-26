@@ -3,6 +3,9 @@ from dotenv import load_dotenv
 import os
 from dataclasses import dataclass
 import datetime
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 load_dotenv()
 api_key = os.getenv('API_KEY')
 
@@ -58,16 +61,46 @@ def get_5_day_forecast(lat, lon, API_key):
                 'temperature' : int(item['main']['temp']),
                 'description' : item['weather'][0]['description'],
                 'icon' : item['weather'][0]['icon']
-            }
+            } 
     forecast_list = [{'date': date, **data} for date, data in forecast_dict.items()]
     return forecast_list
+
+
+def generate_forecast_graph(forecast):
+    dates = [item["date"] for item in forecast]
+    temps = [item['temperature'] for item in forecast]
+
+
+    plt.figure(figsize=(10, 5))
+    plt.bar(dates, temps, color='skyblue')
+    plt.xlabel("Date")
+    plt.ylabel("Temperature (°C)")
+    plt.title('5-Day Weather Forecast')
+
+    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+    if not os.path.exists(static_dir):
+        os.makedirs(static_dir)
+
+    graph_path = os.path.join(os.path.dirname(__file__), 'static', 'forecast_graph.png')
+    print("Saving forecast graph to:", graph_path)
+    plt.savefig(graph_path)
+    plt.close()
+
+    return graph_path
+
 
 
 def main(city_name, country_name):
     lat, lon = get_lan_lon(city_name, country_name, api_key)
     weather_data=(get_current_weather(lat, lon, api_key))
     weather_data.forecast = get_5_day_forecast(lat, lon, api_key)
-    return weather_data
+
+    graph_path = generate_forecast_graph(weather_data.forecast)
+    print(f"Current weather in {city_name}: {weather_data.temperature}°C, {weather_data.description}")
+    print("5-Day Forecast:", weather_data.forecast)
+    print(f"Forecast graph saved at {graph_path}")
+
+    return weather_data, graph_path
 
 
 if __name__ == "__main__":
